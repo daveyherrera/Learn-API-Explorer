@@ -52,7 +52,7 @@ class Token:
             self.token_expires_in = token_payload["expires_in"]
             self.create_token_tmp_file()
             if self.token_file_exist():
-                return self.token_headers()
+                return self.token_headers(self.token)
             else:
                 print("There seems to be an error when creating the token temporary file, please make sure the application can create, remove files")
         except:
@@ -104,7 +104,5 @@ class Token:
             ("The file no longer exists")
 
 
-connection = Token(application_key=application_key,
-                   secret=secret, url=your_institution_url)
-
-print(connection.create_token())
+# call instance_name.create_token() to start the process
+# print(connection.create_token())
