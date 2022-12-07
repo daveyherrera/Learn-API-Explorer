@@ -1,7 +1,6 @@
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
 from datetime import datetime, timedelta
-from credentials import application_key, secret, your_institution_url
 import json
 import os
 
@@ -19,6 +18,7 @@ class Token:
         self.token_expiration_date = ""
         self.current_dir = os.getcwd()
 
+# Main function
     def create_token(self):
         if self.token_file_exist():
             if self.is_token_date_valid(self.extract_date()):
@@ -28,11 +28,13 @@ class Token:
         self.generate_token()
         return self.token_headers(self.token)
 
+# Does the file already exist?
     def token_file_exist(self):
         path = self.current_dir + "/token"
         exists = os.path.exists(path)
         return exists
 
+# is the token date "valid"
     def is_token_date_valid(self, token_date):
         # a token date is valid when the date in the file is bigger than now()
         token_end_date = datetime.strptime(
@@ -41,6 +43,7 @@ class Token:
             return True
         return False
 
+# generate a new token
     def generate_token(self):
         try:
             client = BackendApplicationClient(
@@ -58,6 +61,7 @@ class Token:
         except:
             return False
 
+# Define the date on which the token will expire
     def set_token_expiration_date(self):
         # token expt date has to be changed to str to be dumped in json to the external file
         token_expiration_date = self.now + \
@@ -65,6 +69,7 @@ class Token:
         self.token_expiration_date = token_expiration_date
         return str(token_expiration_date)
 
+# Generates the token temporary file
     def create_token_tmp_file(self):
         file_content = self.token_headers(self.token)
         file_content.update(
@@ -75,12 +80,14 @@ class Token:
         file_token.close()
         return file_content
 
+# Creates the token authorization dictionary
     def token_headers(self, token):
         token_data = {
             "authorization": token,
         }
         return token_data
 
+# Reads the file
     def read_file(self):
         # assumes the file is always called token
         token_file = open("token")
@@ -89,12 +96,14 @@ class Token:
         token_file.close()
         return file_content
 
+# Reads the date on the token file
     def extract_date(self):
         file_content = self.read_file()
         date_string = file_content["token_expiration_date"]
         self.token = file_content["authorization"]
         return date_string
 
+# removes the file when the token is no longer valid
     def remove_file(self):
         try:
             path = self.current_dir + "/token"
@@ -104,5 +113,5 @@ class Token:
             ("The file no longer exists")
 
 
-# call instance_name.create_token() to start the process
-# print(connection.create_token())
+# First you need to instance the token to start the process
+# you can see the token itself by printing it, you have to call create_token() after instantiating the object
